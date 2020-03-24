@@ -7,6 +7,7 @@ class CalOS:
     current_proc = None
 
     def __init__(self, ram, debug=False):
+        self.current_proc = "NEW"
         self.syscalls = { "test_syscall": self.test_syscall }
         self._ready_q = []
         self._ram = ram
