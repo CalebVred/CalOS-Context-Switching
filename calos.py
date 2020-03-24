@@ -61,7 +61,7 @@ class CalOS:
         else:
             self.context_switch()
             self.reset_timer()
-
+    #TODO: Fix this: context switch isn't working right
     def context_switch(self):
         '''Do a context switch between the current_proc and the process
         on the front of the ready_q.
@@ -78,17 +78,17 @@ class CalOS:
         queue on the given cpu -- i.e., run the operating system!
         '''
         while len(self._ready_q) != 0:
-            current_proc = self._ready_q.pop()
+            self.current_proc = self._ready_q.pop()
             self.reset_timer()
-            self._cpu.set_registers(current_proc.get_registers())
+            self._cpu.set_registers(self.current_proc.get_registers())
             self._cpu.run_process()
-            current_proc.set_state("DONE")
+            self.current_proc.set_state("DONE")
         pass
 
     def reset_timer(self):
         '''Reset the timer's countdown to the value in the current_proc's
         PCB.'''
-        self._timer_controller.set_countdown(CalOS.current_proc.get_quantum())
+        self._timer_controller.set_countdown(self.current_proc.get_quantum())
         
 
 
