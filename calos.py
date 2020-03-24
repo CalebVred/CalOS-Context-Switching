@@ -7,7 +7,7 @@ class CalOS:
     current_proc = None
 
     def __init__(self, ram, debug=False):
-        self.current_proc = "NEW"
+        self.current_proc = PCB("current_proc")
         self.syscalls = { "test_syscall": self.test_syscall }
         self._ready_q = []
         self._ram = ram
@@ -49,12 +49,12 @@ class CalOS:
         ready queue, reset the timer and continue.  Else, context_switch.
         '''
         #Save CPU registers to current process
-        current_proc.set_registers(self._cpu.get_registers())
+        self.current_proc.set_registers(self._cpu.get_registers())
 
         #If the ready queue is empty, reset the timer and restore the registers
         if len(self._ready_q) == 0:
             self.reset_timer()
-            self._cpu.set_registers(current_proc.get_registers())
+            self._cpu.set_registers(self.current_proc.get_registers())
             return
         
         #Otherwise, context switch and reset the timer
@@ -68,10 +68,10 @@ class CalOS:
         '''
         #Pop the new process off the ready queue
         new_proc = self._ready_q.pop()
-        current_proc.set_registers(self._cpu.get_registers())
+        self.current_proc.set_registers(self._cpu.get_registers())
         self._cpu.set_registers(new_proc.get_registers())
         #Save the current proccess into the ready queue
-        self.add_to_ready_q(current_proc)
+        self.add_to_ready_q(self.current_proc)
 
     def run(self):
         '''Startup the timer controller and execute processes in the ready
